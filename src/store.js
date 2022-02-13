@@ -17,12 +17,24 @@ const deleteToDo = (id) => {
     };
 }
 
+const saveLocalStorage = (toDos) => {
+    localStorage.setItem("toDos", JSON.stringify(toDos));
+    return toDos;
+}
+
 const reducer = (state = [], action) => {
+    const checkStorage = localStorage.getItem("toDos");
+    if(checkStorage !== null) {
+        state = JSON.parse(checkStorage);
+    }
     switch(action.type) {
         case ADD:
-            return [{text: action.text, id: Date.now()}, ...state];
+            const toDos = [{text: action.text, id: Date.now()}, ...state];
+            return saveLocalStorage(toDos);
         case DELETE:
-            return state.filter(toDo => toDo.id !== action.id);
+            const delToDo = state.filter(toDo => toDo.id !== action.id);
+            saveLocalStorage(delToDo);
+            return delToDo;
         default:
             return state;
     }
